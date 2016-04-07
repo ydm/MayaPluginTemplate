@@ -47,8 +47,8 @@ function (mph_display_variables _display_values)
 endfunction(mph_display_variables)
 
 
-# Given Maya's version, return the destination directory plugins can
-# be installed in.
+# Given Maya's version, return the destination directory plugins
+# should be installed in.
 function (mph_destination_directory _var _version)
   string (SUBSTRING ${_version} 0 4 _truncated)
   set (${_var} "~/maya/${_truncated}/plug-ins/" PARENT_SCOPE)
