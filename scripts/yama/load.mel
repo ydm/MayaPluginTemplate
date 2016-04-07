@@ -1,0 +1,52 @@
+proc int loadPluginSafe(string $name)
+{
+	int $loaded = `pluginInfo -q -loaded $name`;
+	if ($loaded) {
+		// Already loaded
+		//
+		return true;
+	}
+	string $res[] = `loadPlugin $name`;
+	return size($res) > 0 && $res[0] == $name;
+}
+
+proc loadScene(string $name)
+{
+	// Load scene file
+	//
+	print ("4. Loading scene: " + $name + "\n");
+	file -f -new;
+	string $full = `file -o $name`;
+
+	// Delete it after loading (ydm TODO: Delete it only if loading is successful!)
+	//
+	// string $full = `file -q -expandName $name`;
+	int $deleted = `sysFile -delete $full`;
+	if ($deleted) {
+		print ("5. Deleted scene " + $name + "\n");
+	} else {
+		print ("Error while deleting " + $name + "\n");
+	}
+}
+
+proc string[] pluginNames(string $s)
+{
+	string $plugins[];
+	tokenize $s $plugins;
+	return $plugins;
+}
+
+global proc ydmLoad(string $scene, string $plugins)
+{
+	$ary = pluginNames($plugins);
+	for ($p in $ary) {
+		print ("3. Loading plugin " + $p + "...\n");
+		if (loadPluginSafe($p)) {
+			print ("3.   Success!\n");
+		} else {
+			print ("3.   Failure!\n");
+		}
+	}
+
+	loadScene($scene);
+}

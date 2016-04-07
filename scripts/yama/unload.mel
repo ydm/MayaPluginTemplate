@@ -1,0 +1,46 @@
+proc saveScene(string $name)
+{
+	print ("1. Saving scene: " + $name + "\n");
+	file -rename $name;
+	file -save -type "mayaBinary";
+}
+
+proc string[] pluginNames(string $s)
+{
+	string $plugins[];
+	tokenize $s $plugins;
+	return $plugins;
+}
+
+proc int safeUnloadPlugin(string $name)
+{
+	int $loaded = `pluginInfo -q -loaded $name`;
+	if (!$loaded) {
+		// Already unloaded
+		//
+		return true;
+	}
+	string $res[] = `unloadPlugin $name`;
+	return size($res) > 0 && $res[0] == $name;
+}
+
+global proc ydmUnload(string $scene, string $plugins)
+{
+	saveScene($scene);
+
+	// Create a brand new scene
+	file -f -new;  // ydm XXX: Is -f required after saving?
+
+	// Flush undo queue before unloading plugins.
+	flushUndo;
+	
+	string $ary[] = pluginNames($plugins);
+	for ($p in $ary) {
+		print ("2. Unloading plugin " + $p + "...\n");
+		if (safeUnloadPlugin($p)) {
+			print ("2.   Success!\n");
+		} else {
+			print ("2.   Failure!\n");
+		}
+	}
+}
