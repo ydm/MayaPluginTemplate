@@ -29,3 +29,6 @@ add_custom_target (
      $<TARGET_FILE:${PROJECT_NAME}>"
   DEPENDS ${PROJECT_NAME}
   )
+
+# Last, but not least, we want compile_components.json to be generated
+set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
